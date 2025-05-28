@@ -1,4 +1,5 @@
 import os
+import ssl
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -16,7 +17,19 @@ def initialize_db():
     """Initialize MongoDB connection"""
     global client, db
     try:
-        client = MongoClient(MONGODB_URI)
+        # Configure MongoDB client with proper TLS settings
+        client = MongoClient(
+            MONGODB_URI,
+            tls=True,
+            tlsAllowInvalidCertificates=True,  # For development only
+            connectTimeoutMS=30000,
+            socketTimeoutMS=30000,
+            serverSelectionTimeoutMS=30000
+        )
+        
+        # Test the connection
+        client.admin.command('ping')
+        
         db = client.turf_booking_db
         print("Connected to MongoDB successfully!")
         return db
