@@ -20,6 +20,13 @@ async def register_user(user: UserCreate):
     """Register a new user"""
     db = get_db()
     
+    # Check if database connection is valid
+    if db is None:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Database connection failed. Please try again later.",
+        )
+    
     # Check if user already exists
     if db.users.find_one({"email": user.email}):
         raise HTTPException(
