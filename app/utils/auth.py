@@ -6,9 +6,13 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 import os
 from dotenv import load_dotenv
-from app.models.user_models import TokenData as UserTokenData
-from app.models.owner_models import TokenData as OwnerTokenData
 from app.database.db import get_db
+
+# Define TokenData class here to avoid circular imports
+class TokenData:
+    def __init__(self, email: Optional[str] = None, user_type: str = "user"):
+        self.email = email
+        self.user_type = user_type
 
 # Load environment variables
 load_dotenv()
@@ -61,18 +65,17 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         if email is None:
             raise credentials_exception
         
-        if user_type == "user":
-            token_data = UserTokenData(email=email, user_type=user_type)
+        token_data = TokenData(email=email, user_type=user_type)
+        db = get_db()
+        
+        if token_data.user_type == "user":
             # Get user from database
-            db = get_db()
             user = db.users.find_one({"email": email})
             if user is None:
                 raise credentials_exception
             return user
         else:
-            token_data = OwnerTokenData(email=email, user_type=user_type)
             # Get owner from database
-            db = get_db()
             owner = db.owners.find_one({"email": email})
             if owner is None:
                 raise credentials_exception

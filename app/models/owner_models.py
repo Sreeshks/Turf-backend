@@ -61,6 +61,11 @@ class TurfInDB(TurfBase):
     updated_at: Optional[datetime] = None
 
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
 class TokenData(BaseModel):
     email: Optional[str] = None
     user_type: str = "owner"  # To differentiate between user and owner

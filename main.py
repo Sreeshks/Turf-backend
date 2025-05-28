@@ -1,7 +1,10 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import user_routes, owner_routes
 from app.database.db import initialize_db
+
+# Import routes after creating the app to avoid circular imports
+import app.routes.user_routes as user_routes
+import app.routes.owner_routes as owner_routes
 
 app = FastAPI(
     title="Turf Booking API",
