@@ -1,6 +1,6 @@
 import os
 import sys
-import ssl
+import certifi
 from pymongo import MongoClient
 from dotenv import load_dotenv
 
@@ -29,11 +29,15 @@ def initialize_db():
         
     try:
         print(f"Connecting to MongoDB...")
+        
+        # Use certifi for SSL certificate verification
+        ca_path = certifi.where()
+        print(f"Using CA certificates from: {ca_path}")
+        
         # Configure MongoDB client with proper TLS settings
         client = MongoClient(
             MONGODB_URI,
-            tls=True,
-            tlsAllowInvalidCertificates=True,  # For development only
+            tlsCAFile=ca_path,  # Use certifi's CA bundle
             connectTimeoutMS=30000,
             socketTimeoutMS=30000,
             serverSelectionTimeoutMS=30000
