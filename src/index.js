@@ -211,6 +211,70 @@ app.get('/user/profile/:email', async (req, res) => {
 
 /**
  * @swagger
+ * /user/profile/{email}:
+ *   put:
+ *     summary: Update user profile
+ *     tags: [User]
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email of the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: John Doe
+ *               password:
+ *                 type: string
+ *                 example: newpassword123
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Server error
+ */
+app.put('/user/profile/:email', async (req, res) => {
+  try {
+    const { name, password } = req.body;
+    const { email } = req.params;
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (name) user.name = name;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+    }
+
+    await user.save();
+    res.json({ message: 'Profile updated successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+/**
+ * @swagger
  * /turf-owner/register:
  *   post:
  *     summary: Register a new turf owner
@@ -382,6 +446,89 @@ app.get('/turf-owner/profile/:email', async (req, res) => {
       return res.status(404).json({ message: 'Turf owner not found' });
     }
     res.json(owner);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+});
+
+/**
+ * @swagger
+ * /turf-owner/profile/{email}:
+ *   put:
+ *     summary: Update turf owner profile
+ *     tags: [Turf Owner]
+ *     parameters:
+ *       - in: path
+ *         name: email
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Email of the turf owner
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Jane Doe
+ *               password:
+ *                 type: string
+ *                 example: newpassword123
+ *               turfLocation:
+ *                 type: string
+ *                 example: 456 Sports Avenue, Mumbai
+ *               sports:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                   enum: [Football, Cricket, Tennis, Badminton]
+ *                 example: [Football, Tennis]
+ *     responses:
+ *       200:
+ *         description: Profile updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         description: Invalid sports provided
+ *       404:
+ *         description: Turf owner not found
+ *       500:
+ *         description: Server error
+ */
+app.put('/turf-owner/profile/:email', async (req, res) => {
+  try {
+    const { name, password, turfLocation, sports } = req.body;
+    const { email } = req.params;
+
+    const owner = await TurfOwner.findOne({ email });
+    if (!owner) {
+      return res.status(404).json({ message: 'Turf owner not found' });
+    }
+
+    if (name) owner.name = name;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      owner.password = hashedPassword;
+    }
+    if (turfLocation) owner.turfLocation = turfLocation;
+    if (sports) {
+      const validSports = ['Football', 'Cricket', 'Tennis', 'Badminton'];
+      if (!Array.isArray(sports) || !sports.every(sport => validSports.includes(sport))) {
+        return res.status(400).json({ message: 'Invalid sports provided' });
+      }
+      owner.sports = sports;
+    }
+
+    await owner.save();
+    res.json({ message: 'Profile updated successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
