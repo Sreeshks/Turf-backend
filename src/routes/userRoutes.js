@@ -12,6 +12,6 @@ router.post('/reset-password', userController.resetPassword);
 router.get('/all', userController.getAllUsers);
 
 // Get all turfs
-router.get('/turfs', auth, userController.getAllTurfs);
+router.get('/turfs', userController.getAllTurfs);
 
 module.exports = router; 
