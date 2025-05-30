@@ -7,5 +7,7 @@ router.post('/login', turfOwnerController.login);
 router.get('/profile/:email', turfOwnerController.getProfile);
 router.put('/profile/:email', turfOwnerController.updateProfile);
 router.get('/turfs', turfOwnerController.getAllTurfs);
+router.post('/forgot-password', turfOwnerController.forgotPassword);
+router.post('/reset-password', turfOwnerController.resetPassword);
 
 module.exports = router; 

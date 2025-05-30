@@ -37,12 +37,12 @@ exports.login = async (req, res) => {
 
     const owner = await TurfOwner.findOne({ email });
     if (!owner) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid email' });
     }
 
     const isMatch = await bcrypt.compare(password, owner.password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: 'Invalid Password' });
     }
 
     res.json({ message: 'Login successful' });
@@ -98,6 +98,69 @@ exports.getAllTurfs = async (req, res) => {
   try {
     const turfs = await TurfOwner.find().select('-password');
     res.json(turfs);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ message: 'Email is required' });
+    }
+
+    const owner = await TurfOwner.findOne({ email });
+    if (!owner) {
+      return res.status(404).json({ message: 'Turf owner not found' });
+    }
+
+    // Generate a random 6-digit code
+    const resetCode = Math.floor(100000 + Math.random() * 900000).toString();
+    
+    // Store the reset code and its expiry (15 minutes from now)
+    owner.resetPasswordCode = resetCode;
+    owner.resetPasswordExpires = Date.now() + 15 * 60 * 1000; // 15 minutes
+    await owner.save();
+
+    // In a real application, you would send this code via email
+    // For now, we'll just return it in the response
+    res.json({ 
+      message: 'Password reset code sent successfully',
+      resetCode: resetCode // Remove this in production and implement email sending
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, resetCode, newPassword } = req.body;
+    if (!email || !resetCode || !newPassword) {
+      return res.status(400).json({ message: 'Email, reset code, and new password are required' });
+    }
+
+    const owner = await TurfOwner.findOne({ 
+      email,
+      resetPasswordCode: resetCode,
+      resetPasswordExpires: { $gt: Date.now() }
+    });
+
+    if (!owner) {
+      return res.status(400).json({ message: 'Invalid or expired reset code' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    // Update password and clear reset code fields
+    owner.password = hashedPassword;
+    owner.resetPasswordCode = undefined;
+    owner.resetPasswordExpires = undefined;
+    await owner.save();
+
+    res.json({ message: 'Password reset successful' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
