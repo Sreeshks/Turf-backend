@@ -96,8 +96,41 @@ exports.updateProfile = async (req, res) => {
 
 exports.getAllTurfs = async (req, res) => {
   try {
-    const turfs = await TurfOwner.find().select('-password');
-    res.json(turfs);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const search = req.query.search || '';
+    const sport = req.query.sport || '';
+
+    const query = {};
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { turfLocation: { $regex: search, $options: 'i' } }
+      ];
+    }
+    if (sport) {
+      query.sports = sport;
+    }
+
+    const totalTurfs = await TurfOwner.countDocuments(query);
+    const totalPages = Math.ceil(totalTurfs / limit);
+
+    const turfs = await TurfOwner.find(query)
+      .select('-password -resetPasswordCode -resetPasswordExpires')
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .sort({ createdAt: -1 });
+
+    res.json({
+      turfs,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalTurfs,
+        turfsPerPage: limit
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
