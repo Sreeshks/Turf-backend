@@ -22,7 +22,14 @@ exports.register = async (req, res) => {
     const owner = new TurfOwner({ email, password: hashedPassword, name, turfLocation, sports });
     await owner.save();
 
-    res.status(201).json({ message: 'Turf owner registered successfully' });
+    res.status(201).json({ 
+      message: 'Turf owner registered successfully',
+      turfId: owner.turfId,
+      name: owner.name,
+      email: owner.email,
+      turfLocation: owner.turfLocation,
+      sports: owner.sports
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
@@ -45,7 +52,35 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: 'Invalid Password' });
     }
 
-    res.json({ message: 'Login successful' });
+    res.json({ 
+      message: 'Login successful',
+      turfId: owner.turfId,
+      name: owner.name,
+      email: owner.email,
+      turfLocation: owner.turfLocation,
+      sports: owner.sports
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+exports.getProfileById = async (req, res) => {
+  try {
+    const { turfId } = req.params;
+    const owner = await TurfOwner.findOne({ turfId }).select('-password -resetPasswordCode -resetPasswordExpires');
+    
+    if (!owner) {
+      return res.status(404).json({ message: 'Turf owner not found' });
+    }
+
+    res.json({
+      turfId: owner.turfId,
+      name: owner.name,
+      email: owner.email,
+      turfLocation: owner.turfLocation,
+      sports: owner.sports
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
@@ -57,7 +92,13 @@ exports.getProfile = async (req, res) => {
     if (!owner) {
       return res.status(404).json({ message: 'Turf owner not found' });
     }
-    res.json(owner);
+    res.json({
+      turfId: owner.turfId,
+      name: owner.name,
+      email: owner.email,
+      turfLocation: owner.turfLocation,
+      sports: owner.sports
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
@@ -88,7 +129,14 @@ exports.updateProfile = async (req, res) => {
     }
 
     await owner.save();
-    res.json({ message: 'Profile updated successfully' });
+    res.json({ 
+      message: 'Profile updated successfully',
+      turfId: owner.turfId,
+      name: owner.name,
+      email: owner.email,
+      turfLocation: owner.turfLocation,
+      sports: owner.sports
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
@@ -96,8 +144,14 @@ exports.updateProfile = async (req, res) => {
 
 exports.getAllTurfs = async (req, res) => {
   try {
-    const turfs = await TurfOwner.find().select('-password');
-    res.json(turfs);
+    const turfs = await TurfOwner.find().select('-password -resetPasswordCode -resetPasswordExpires');
+    res.json(turfs.map(turf => ({
+      turfId: turf.turfId,
+      name: turf.name,
+      email: turf.email,
+      turfLocation: turf.turfLocation,
+      sports: turf.sports
+    })));
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
