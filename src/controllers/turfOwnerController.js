@@ -88,16 +88,22 @@ exports.getProfileById = async (req, res) => {
 
 exports.getProfile = async (req, res) => {
   try {
-    const owner = await TurfOwner.findOne({ email: req.params.email }).select('-password');
+    const { email } = req.params;
+    const owner = await TurfOwner.findOne({ email }).select('-password -resetPasswordCode -resetPasswordExpires');
+    
     if (!owner) {
       return res.status(404).json({ message: 'Turf owner not found' });
     }
+
+    // Return complete profile details
     res.json({
       turfId: owner.turfId,
       name: owner.name,
       email: owner.email,
       turfLocation: owner.turfLocation,
-      sports: owner.sports
+      sports: owner.sports,
+      createdAt: owner.createdAt,
+      updatedAt: owner.updatedAt
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
