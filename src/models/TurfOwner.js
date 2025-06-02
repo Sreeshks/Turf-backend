@@ -7,7 +7,8 @@ const turfOwnerSchema = new mongoose.Schema({
   turfLocation: { type: String, required: true },
   sports: [{ type: String, enum: ['Football', 'Cricket', 'Tennis', 'Badminton'], required: true }],
   resetPasswordCode: { type: String },
-  resetPasswordExpires: { type: Date }
+  resetPasswordExpires: { type: Date },
+  image: { type: String }
 });
 
 module.exports = mongoose.model('TurfOwner', turfOwnerSchema); 

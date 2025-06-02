@@ -3,8 +3,8 @@ const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, name, turfLocation, sports } = req.body;
-    if (!email || !password || !name || !turfLocation || !sports || !Array.isArray(sports)) {
+    const { email, password, name, turfLocation, sports ,image } = req.body;
+    if (!email || !password || !name || !turfLocation || !sports || !image ||!Array.isArray(sports)) {
       return res.status(400).json({ message: 'All fields are required, and sports must be an array' });
     }
 
@@ -17,9 +17,13 @@ exports.register = async (req, res) => {
     if (existingOwner) {
       return res.status(400).json({ message: 'Turf owner already exists' });
     }
+    let imageUrl;
+    if(image){
+      imageUrl=await imageUpload(image.path)
+    }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const owner = new TurfOwner({ email, password: hashedPassword, name, turfLocation, sports });
+    const owner = new TurfOwner({ email, password: hashedPassword, name, turfLocation, sports,image:imageUrl });
     await owner.save();
 
     res.status(201).json({ 
@@ -187,7 +191,7 @@ exports.forgotPassword = async (req, res) => {
     // For now, we'll just return it in the response
     res.json({ 
       message: 'Password reset code sent successfully',
-      resetCode: resetCode // Remove this in production and implement email sending
+      resetCode: resetCode 
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
@@ -211,7 +215,6 @@ exports.resetPassword = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired reset code' });
     }
 
-    // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
     
     // Update password and clear reset code fields
@@ -225,3 +228,4 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 }; 
+
