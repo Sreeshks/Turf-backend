@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { upload } = require('../middlewares/multer');
 const turfOwnerController = require('../controllers/turfOwnerController');
 
 router.post('/register',upload.single('image'), turfOwnerController.register);
