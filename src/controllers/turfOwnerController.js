@@ -4,9 +4,9 @@ const bcrypt = require('bcrypt');
 exports.register = async (req, res) => {
   try {
     const { email, password, name, turfLocation, sports ,image } = req.body;
-    if (!email || !password || !name || !turfLocation || !sports || !image ||!Array.isArray(sports)) {
-      return res.status(400).json({ message: 'All fields are required, and sports must be an array' });
-    }
+    // if (!email || !password || !name || !turfLocation || !sports || !image ||!Array.isArray(sports)) {
+    //   return res.status(400).json({ message: 'All fields are required, and sports must be an array' });
+    // }
 
     const validSports = ['Football', 'Cricket', 'Tennis', 'Badminton'];
     if (!sports.every(sport => validSports.includes(sport))) {
