@@ -1,4 +1,5 @@
 const TurfOwner = require('../models/TurfOwner');
+const {imageUpload}=require('../utils/imageupload')
 const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
