@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, name, turfLocation, sports ,image } =  req.body;
+    const { email, password, name, turfLocation, sports  } =  req.body;
+   
     // if (!email || !password || !name || !turfLocation || !sports || !image ||!Array.isArray(sports)) {
     //   return res.status(400).json({ message: 'All fields are required, and sports must be an array' });
     // }
@@ -19,8 +20,8 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'Turf owner already exists' });
     }
     let imageUrl;
-    if(image){
-      imageUrl=await imageUpload(image.path)
+    if(req.file){
+      imageUrl=await imageUpload(req.file.path)
     }else{
       imageUrl=null;
     }
