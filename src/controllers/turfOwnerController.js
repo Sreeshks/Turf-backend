@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, name, turfLocation, sports ,image } = req.body;
+    const { email, password, name, turfLocation, sports ,image } =  req.body;
     // if (!email || !password || !name || !turfLocation || !sports || !image ||!Array.isArray(sports)) {
     //   return res.status(400).json({ message: 'All fields are required, and sports must be an array' });
     // }
@@ -20,6 +20,8 @@ exports.register = async (req, res) => {
     let imageUrl;
     if(image){
       imageUrl=await imageUpload(image.path)
+    }else{
+      imageUrl=null;
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
