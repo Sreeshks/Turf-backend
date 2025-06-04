@@ -67,7 +67,8 @@ exports.login = async (req, res) => {
       name: owner.name,
       email: owner.email,
       turfLocation: owner.turfLocation,
-      sports: owner.sports
+      sports: owner.sports,
+      image:owner.image
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
@@ -88,7 +89,8 @@ exports.getProfileById = async (req, res) => {
       name: owner.name,
       email: owner.email,
       turfLocation: owner.turfLocation,
-      sports: owner.sports
+      sports: owner.sports,
+      image:owner.image
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
@@ -111,6 +113,7 @@ exports.getProfile = async (req, res) => {
       email: owner.email,
       turfLocation: owner.turfLocation,
       sports: owner.sports,
+      image:owner.image,
       createdAt: owner.createdAt,
       updatedAt: owner.updatedAt
     });
