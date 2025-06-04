@@ -143,3 +143,20 @@ exports.resetPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 }; 
+exports.booking = async (req, res) => {
+  try {
+    const { name, time, sport } = req.body;
+
+    if (!name || !sport || !time) {
+      return res.status(400).json({ message: 'All fields are required' });
+    }
+
+    // Save to DB
+    const newBooking = new Booking({ name, time, sport });
+    await newBooking.save();
+
+    res.status(201).json({ message: 'Booking successful', data: newBooking });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
