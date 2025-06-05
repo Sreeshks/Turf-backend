@@ -148,11 +148,11 @@ exports.resetPassword = async (req, res) => {
 
 exports.booking = async (req, res) => {
   try {
-    const { turfId, date, startTime, endTime, sport, amount } = req.body;
-    const userEmail = req.user.email; // Assuming you have authentication middleware
+    const { email, date, startTime, endTime, sport, amount } = req.body;
+    // const userEmail = req.user.email; // Assuming you have authentication middleware
 
     // Validate required fields
-    if (!turfId || !date || !startTime || !endTime || !sport || !amount) {
+    if (!email || !date || !startTime || !endTime || !sport || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
