@@ -1,4 +1,6 @@
 const User = require('../models/User');
+const TurfOwner = require('../models/TurfOwner');
+const Booking = require('../models/Booking');
 const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
@@ -142,20 +144,73 @@ exports.resetPassword = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
-}; 
+};
+
 exports.booking = async (req, res) => {
   try {
-    const { name, time, sport } = req.body;
+    const { turfId, date, startTime, endTime, sport, amount } = req.body;
+    const userEmail = req.user.email; // Assuming you have authentication middleware
 
-    if (!name || !sport || !time) {
+    // Validate required fields
+    if (!turfId || !date || !startTime || !endTime || !sport || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
-    // Save to DB
-    const newBooking = new Booking({ name, time, sport });
+    // Find user and turf
+    const user = await User.findOne({ email: userEmail });
+    const turf = await TurfOwner.findOne({ turfId });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (!turf) {
+      return res.status(404).json({ message: 'Turf not found' });
+    }
+
+    // Validate if the sport is available at the turf
+    if (!turf.sports.includes(sport)) {
+      return res.status(400).json({ message: 'This sport is not available at this turf' });
+    }
+
+    // Check if the time slot is available
+    const existingBooking = await Booking.findOne({
+      turf: turf._id,
+      date: new Date(date),
+      startTime,
+      endTime,
+      status: { $ne: 'cancelled' }
+    });
+
+    if (existingBooking) {
+      return res.status(400).json({ message: 'This time slot is already booked' });
+    }
+
+    // Create new booking
+    const newBooking = new Booking({
+      user: user._id,
+      turf: turf._id,
+      date: new Date(date),
+      startTime,
+      endTime,
+      sport,
+      amount
+    });
+
     await newBooking.save();
 
-    res.status(201).json({ message: 'Booking successful', data: newBooking });
+    res.status(201).json({
+      message: 'Booking successful',
+      booking: {
+        id: newBooking._id,
+        date: newBooking.date,
+        startTime: newBooking.startTime,
+        endTime: newBooking.endTime,
+        sport: newBooking.sport,
+        amount: newBooking.amount,
+        status: newBooking.status
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
