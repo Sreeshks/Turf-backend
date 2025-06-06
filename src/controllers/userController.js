@@ -150,7 +150,6 @@ exports.booking = async (req, res) => {
   try {
     const { email, turfId, date, startTime, endTime, sport, amount } = req.body;
 
-    // Validate required fields
     if (!email || !turfId || !date || !startTime || !endTime || !sport || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
     }
@@ -166,13 +165,9 @@ exports.booking = async (req, res) => {
     if (!turf) {
       return res.status(404).json({ message: 'Turf not found' });
     }
-
-    // Validate if the sport is available at the turf
     if (!turf.sports.includes(sport)) {
       return res.status(400).json({ message: 'This sport is not available at this turf' });
     }
-
-    // Check if the time slot is available
     const existingBooking = await Booking.findOne({
       turf: turf._id,
       date: new Date(date),
@@ -185,7 +180,7 @@ exports.booking = async (req, res) => {
       return res.status(400).json({ message: 'This time slot is already booked' });
     }
 
-    // Create new booking
+    
     const newBooking = new Booking({
       user: user._id,
       turf: turf._id,

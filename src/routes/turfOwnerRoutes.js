@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { upload } = require('../middlewares/multer');
-const turfOwnerController = require('../controllers/turfOwnerController');
+const turfController = require('../controllers/turfController');
+const { upload } = require('../utils/multer');
 
-router.post('/register',upload.single('image'), turfOwnerController.register);
-router.post('/login', turfOwnerController.login);
-router.get('/profile/:email', turfOwnerController.getProfile);
-router.get('/profile/id/:turfId', turfOwnerController.getProfileById);
-router.put('/profile/:email', turfOwnerController.updateProfile);
-router.get('/turfs', turfOwnerController.getAllTurfs);
-router.post('/forgot-password', turfOwnerController.forgotPassword);
-router.post('/reset-password', turfOwnerController.resetPassword);
+router.post('/register', upload.single('image'), turfController.register);
+router.post('/login', turfController.login);
+router.get('/profile/:email', turfController.getProfile);
+router.get('/profile/id/:turfId', turfController.getProfileById);
+router.put('/profile/:email', turfController.updateProfile);
+router.get('/all', turfController.getAllTurfs);
+router.post('/forgot-password', turfController.forgotPassword);
+router.post('/reset-password', turfController.resetPassword);
+router.post('/addturf', upload.single('image'), turfController.addTurf);
 
-module.exports = router; 
+module.exports = router;
