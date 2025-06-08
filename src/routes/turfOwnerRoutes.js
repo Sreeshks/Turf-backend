@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const turfController = require('../controllers/turfController');
+const turfController = require('../controllers/turfOwnerController');
 const { upload } = require('../utils/multer');
 
 router.post('/register', upload.single('image'), turfController.register);
@@ -11,6 +11,6 @@ router.put('/profile/:email', turfController.updateProfile);
 router.get('/all', turfController.getAllTurfs);
 router.post('/forgot-password', turfController.forgotPassword);
 router.post('/reset-password', turfController.resetPassword);
-router.post('/add--turf', upload.single('image'), turfController.addTurf);
+router.post('/addturf', upload.single('image'), turfController.addTurf);
 
 module.exports = router;
