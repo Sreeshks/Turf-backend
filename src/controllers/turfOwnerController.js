@@ -2,78 +2,6 @@ const TurfOwner = require('../models/TurfOwner');
 const {imageUpload}=require('../utils/imageupload')
 const bcrypt = require('bcrypt');
 
-exports.register = async (req, res) => {
-try {
-const { email, password, name, turfLocation, sports  } =  req.body;
-
-// if (!email || !password || !name || !turfLocation || !sports || !image ||!Array.isArray(sports)) {
-//   return res.status(400).json({ message: 'All fields are required, and sports must be an array' });
-// }
-
-const validSports = ['Football', 'Cricket', 'Tennis', 'Badminton'];
-if (!sports.every(sport => validSports.includes(sport))) {
-return res.status(400).json({ message: 'Invalid sports provided' });
-}
-
-const existingOwner = await TurfOwner.findOne({ email });
-if (existingOwner) {
-return res.status(400).json({ message: 'Turf owner already exists' });
-}
-let imageUrl;
-if(req.file){
-imageUrl=await imageUpload(req.file.path)
-}else{
-imageUrl=null;
-}
-
-const hashedPassword = await bcrypt.hash(password, 10);
-const owner = new TurfOwner({ email, password: hashedPassword, name, turfLocation, sports,image:imageUrl });
-await owner.save();
-
-res.status(201).json({
-message: 'Turf owner registered successfully',
-turfId: owner.turfId,
-name: owner.name,
-email: owner.email,
-turfLocation: owner.turfLocation,
-sports: owner.sports,
-image:owner.image
-});
-} catch (error) {
-res.status(500).json({ message: 'Server error', error });
-}
-};
-
-exports.login = async (req, res) => {
-try {
-const { email, password } = req.body;
-if (!email || !password) {
-return res.status(400).json({ message: 'Email and password are required' });
-}
-
-const owner = await TurfOwner.findOne({ email });
-if (!owner) {
-return res.status(401).json({ message: 'Invalid email' });
-}
-
-const isMatch = await bcrypt.compare(password, owner.password);
-if (!isMatch) {
-return res.status(401).json({ message: 'Invalid Password' });
-}
-
-res.json({
-message: 'Login successful',
-
-name: owner.name,
-email: owner.email,
-turfLocation: owner.turfLocation,
-sports: owner.sports,
-image:owner.image
-});
-} catch (error) {
-res.status(500).json({ message: 'Server error', error });
-}
-};
 
 exports.getProfile = async (req, res) => {
 try {
@@ -179,11 +107,11 @@ res.status(500).json({ message: 'Server error', error });
 
 exports.addturf = async (req, res) => {
   try {
-    const {name, location, sports, pricePerHour, description, turfImage } = req.body;
+    const {name, location, sports, turfImage ,userid } = req.body;
     const { email } = req.params;
 
-    if (!name || !location || !sports || !pricePerHour) {
-      return res.status(400).json({ message: 'Name, location, sports, and price per hour are required' });
+    if (!name || !location || !sports ) {
+      return res.status(400).json({ message: 'Name, location, sports are required' });
     }
 
     const validSports = ['Football', 'Cricket', 'Tennis', 'Badminton'];
@@ -200,7 +128,6 @@ exports.addturf = async (req, res) => {
     if (req.file) {
       imageUrl = await imageUpload(req.file.path);
     } else if (turfImage) {
-      // If image is provided in request body (base64 or URL)
       imageUrl = turfImage;
     }
 
@@ -209,10 +136,8 @@ exports.addturf = async (req, res) => {
       name,
       location,
       sports,
-      pricePerHour,
-      description: description || '',
       image: imageUrl,
-      ownerId: owner.turfId
+      userid: userid
     };
 
     if (!owner.turfs) {
