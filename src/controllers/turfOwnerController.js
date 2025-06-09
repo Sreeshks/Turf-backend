@@ -30,12 +30,12 @@ res.status(500).json({ message: 'Server error', error });
 
 exports.getAllTurfs = async (req, res) => {
 try {
-const turfs = await TurfOwner.find();
+const turfs = await TurfOwner.find( req.query);
 res.json(turfs.map(turf => ({
-turfId: turf.turfId,
+turfId: turf._id,  
 name: turf.name,
 email: turf.email,
-turfLocation: turf.turfLocation,
+turfLocation: turf.location,
 sports: turf.sports
 })));
 } catch (error) {
