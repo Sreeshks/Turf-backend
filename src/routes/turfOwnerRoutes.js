@@ -3,5 +3,4 @@ const router = express.Router();
 const turfController = require('../controllers/turfOwnerController');
 const { upload } = require('../middlewares/multer');
 router.post('/addturf', upload.single('image'), turfController.addturf);
-router.get('/turfs/:email', turfController.getOwnerTurfs);
 module.exports = router;
