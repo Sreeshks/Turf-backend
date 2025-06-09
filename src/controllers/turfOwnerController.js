@@ -236,3 +236,48 @@ res.json({ message: 'Password reset successful' });
 res.status(500).json({ message: 'Server error', error });
 }
 };
+
+exports.addturf = async (req, res) => {
+  try {
+    const { name, location, sports, pricePerHour, description } = req.body;
+    const { email } = req.params;
+    if (!name || !location || !sports || !pricePerHour) {
+      return res.status(400).json({ message: 'Name, location, sports, and price per hour are required' });
+    }
+
+    const validSports = ['Football', 'Cricket', 'Tennis', 'Badminton'];
+    if (!Array.isArray(sports) || !sports.every(sport => validSports.includes(sport))) {
+      return res.status(400).json({ message: 'Invalid sports provided' });
+    }
+
+    const owner = await TurfOwner.findOne({ email });
+    if (!owner) {
+      return res.status(404).json({ message: 'Turf owner not found' });
+    }
+    let imageUrl;
+    if (req.file) {
+      imageUrl = await imageUpload(req.file.path);
+    }
+    const newTurf = {
+      name,
+      location,
+      sports,
+      pricePerHour,
+      description: description || '',
+      image: imageUrl,
+      ownerId: owner.turfId
+    };
+    if (!owner.turfs) {
+      owner.turfs = [];
+    }
+    owner.turfs.push(newTurf);
+    await owner.save();
+
+    res.status(201).json({
+      message: 'Turf added successfully',
+      turf: newTurf
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
