@@ -32,6 +32,7 @@ exports.getAllTurfs = async (req, res) => {
 try {
 const turfs = await TurfOwner.find( req.query);
 res.json(turfs.map(turf => ({
+userid: turf.userid,
 turfId: turf._id,  
 name: turf.name,
 email: turf.email,
