@@ -30,7 +30,7 @@ res.status(500).json({ message: 'Server error', error });
 
 exports.getAllTurfs = async (req, res) => {
 try {
-const turfs = await TurfOwner.find().select('-password -resetPasswordCode -resetPasswordExpires');
+const turfs = await TurfOwner.find();
 res.json(turfs.map(turf => ({
 turfId: turf.turfId,
 name: turf.name,
@@ -131,12 +131,12 @@ exports.addturf = async (req, res) => {
       image: imageUrl,
       userid: userid
     };
-    const user = new TurfOwner( newTurf);
+    const user = new TurfOwner(newTurf);
     await user.save();
 
     res.status(200).json({
       message: 'Turf added successfully',
-      turf: newTurf
+      turf: user
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
