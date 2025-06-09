@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 
 exports.register = async (req, res) => {
   try {
-    const { email, password, name } = req.body;
+    const { email, password, name , usertype } = req.body;
     if (!email || !password || !name) {
       return res.status(400).json({ message: 'Email, password, and name are required' });
     }
@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = new User({ email, password: hashedPassword, name });
+    const user = new User({ email, password: hashedPassword, name ,usertype });
     await user.save();
 
     res.status(201).json({ message: 'User registered successfully' });

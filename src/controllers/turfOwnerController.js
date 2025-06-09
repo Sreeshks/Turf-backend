@@ -63,7 +63,7 @@ return res.status(401).json({ message: 'Invalid Password' });
 
 res.json({
 message: 'Login successful',
-turfId: owner.turfId,
+
 name: owner.name,
 email: owner.email,
 turfLocation: owner.turfLocation,
@@ -179,7 +179,7 @@ res.status(500).json({ message: 'Server error', error });
 
 exports.addturf = async (req, res) => {
   try {
-    const { name, location, sports, pricePerHour, description, turfImage } = req.body;
+    const {name, location, sports, pricePerHour, description, turfImage } = req.body;
     const { email } = req.params;
 
     if (!name || !location || !sports || !pricePerHour) {
@@ -205,6 +205,7 @@ exports.addturf = async (req, res) => {
     }
 
     const newTurf = {
+      email,
       name,
       location,
       sports,

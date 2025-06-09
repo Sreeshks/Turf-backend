@@ -5,8 +5,10 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   name: { type: String, required: true },
   time: { type: String, required: true },
+  usertype: { type: String, required: true, enum: ["Admin", "User"], default: "User" },
   resetPasswordCode: { type: String },
   resetPasswordExpires: { type: Date }
 });
+
 
 module.exports = mongoose.model('User', userSchema); 
