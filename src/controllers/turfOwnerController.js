@@ -213,7 +213,7 @@ exports.addturf = async (req, res) => {
     owner.turfs.push(newTurf);
     await owner.save();
 
-    res.status(201).json({
+    res.status(200).json({
       message: 'Turf added successfully',
       turf: newTurf
     });
