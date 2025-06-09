@@ -11,4 +11,5 @@ router.put('/profile/:email', turfController.updateProfile);
 router.get('/all', turfController.getAllTurfs);
 router.post('/forgot-password', turfController.forgotPassword);
 router.post('/reset-password', turfController.resetPassword);
+router.post('/addturf/:email', upload.single('image'), turfController.addturf);
 module.exports = router;
