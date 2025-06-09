@@ -4,6 +4,7 @@ const cors = require('cors');
 require('dotenv').config();
 const userRoutes = require('./routes/userRoutes');
 const turfOwnerRoutes = require('./routes/turfOwnerRoutes');
+const slotRoutes = require('./routes/slotsRoutes')
 
 const app = express();
 app.use(express.json());
@@ -17,6 +18,7 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 // Routes
 app.use('/user', userRoutes);
 app.use('/turf-owner', turfOwnerRoutes);
+app.use('/turf-slots',slotRoutes);
 
 // Start server
 const PORT = process.env.PORT || 3000;
