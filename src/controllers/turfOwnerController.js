@@ -75,28 +75,6 @@ res.status(500).json({ message: 'Server error', error });
 }
 };
 
-exports.getProfileById = async (req, res) => {
-try {
-const { turfId } = req.params;
-const owner = await TurfOwner.findOne({ turfId }).select('-password -resetPasswordCode -resetPasswordExpires');
-
-if (!owner) {
-return res.status(404).json({ message: 'Turf owner not found' });
-}
-
-res.json({
-turfId: owner.turfId,
-name: owner.name,
-email: owner.email,
-turfLocation: owner.turfLocation,
-sports: owner.sports,
-image:owner.image
-});
-} catch (error) {
-res.status(500).json({ message: 'Server error', error });
-}
-};
-
 exports.getProfile = async (req, res) => {
 try {
 const { email } = req.params;
@@ -116,44 +94,6 @@ sports: owner.sports,
 image:owner.image,
 createdAt: owner.createdAt,
 updatedAt: owner.updatedAt
-});
-} catch (error) {
-res.status(500).json({ message: 'Server error', error });
-}
-};
-
-exports.updateProfile = async (req, res) => {
-try {
-const { name, password, turfLocation, sports } = req.body;
-const { email } = req.params;
-
-const owner = await TurfOwner.findOne({ email });
-if (!owner) {
-return res.status(404).json({ message: 'Turf owner not found' });
-}
-
-if (name) owner.name = name;
-if (password) {
-const hashedPassword = await bcrypt.hash(password, 10);
-owner.password = hashedPassword;
-}
-if (turfLocation) owner.turfLocation = turfLocation;
-if (sports) {
-const validSports = ['Football', 'Cricket', 'Tennis', 'Badminton'];
-if (!Array.isArray(sports) || !sports.every(sport => validSports.includes(sport))) {
-return res.status(400).json({ message: 'Invalid sports provided' });
-}
-owner.sports = sports;
-}
-
-await owner.save();
-res.json({
-message: 'Profile updated successfully',
-turfId: owner.turfId,
-name: owner.name,
-email: owner.email,
-turfLocation: owner.turfLocation,
-sports: owner.sports
 });
 } catch (error) {
 res.status(500).json({ message: 'Server error', error });
