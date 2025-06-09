@@ -142,20 +142,3 @@ exports.addturf = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-exports.getOwnerTurfs = async (req, res) => {
-  try {
-    const { email } = req.params;
-
-    const owner = await TurfOwner.findOne({ email });
-    if (!owner) {
-      return res.status(404).json({ message: 'Turf owner not found' });
-    }
-    res.json({
-      message: 'Turfs retrieved successfully',
-      turfs: owner || []
-    });
-  } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
-  }
-};
