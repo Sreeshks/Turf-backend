@@ -108,7 +108,6 @@ res.status(500).json({ message: 'Server error', error });
 exports.addturf = async (req, res) => {
   try {
     const {name, location, sports, turfImage ,userid } = req.body;
-    const { email } = req.params;
 
     if (!name || !location || !sports ) {
       return res.status(400).json({ message: 'Name, location, sports are required' });
@@ -118,12 +117,6 @@ exports.addturf = async (req, res) => {
     if (!Array.isArray(sports) || !sports.every(sport => validSports.includes(sport))) {
       return res.status(400).json({ message: 'Invalid sports provided' });
     }
-
-    const owner = await TurfOwner.findOne({ email });
-    if (!owner) {
-      return res.status(404).json({ message: 'Turf owner not found' });
-    }
-
     let imageUrl;
     if (req.file) {
       imageUrl = await imageUpload(req.file.path);
@@ -132,17 +125,12 @@ exports.addturf = async (req, res) => {
     }
 
     const newTurf = {
-      email,
       name,
       location,
       sports,
       image: imageUrl,
       userid: userid
     };
-
-    if (!owner.turfs) {
-      owner.turfs = [];
-    }
     owner.turfs.push(newTurf);
     await owner.save();
 
