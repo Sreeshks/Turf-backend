@@ -4,4 +4,5 @@ const turfController = require('../controllers/turfOwnerController');
 const { upload } = require('../middlewares/multer');
 
 router.post('/addturf', upload.single('image'), turfController.addturf);
+router.get('/getallturfs', turfController.getAllTurfs);
 module.exports = router;
