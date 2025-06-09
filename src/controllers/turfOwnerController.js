@@ -131,8 +131,8 @@ exports.addturf = async (req, res) => {
       image: imageUrl,
       userid: userid
     };
-    owner.turfs.push(newTurf);
-    await owner.save();
+    const user = new TurfOwner( newTurf);
+    await user.save();
 
     res.status(200).json({
       message: 'Turf added successfully',
