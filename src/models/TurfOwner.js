@@ -8,7 +8,8 @@ turfLocation: { type: String, required: true },
 sports: [{ type: String, enum: ['Football', 'Cricket', 'Tennis', 'Badminton'], required: true }],
 resetPasswordCode: { type: String },
 resetPasswordExpires: { type: Date },
-image: { type: String }
+image: { type: String },
+pricePerHour: {type: Number}
 });
 
 module.exports = mongoose.model('TurfOwner', turfOwnerSchema);
