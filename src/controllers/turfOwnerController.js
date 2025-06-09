@@ -179,8 +179,9 @@ res.status(500).json({ message: 'Server error', error });
 
 exports.addturf = async (req, res) => {
   try {
-    const { name, location, sports, pricePerHour, description } = req.body;
+    const { name, location, sports, pricePerHour, description, turfImage } = req.body;
     const { email } = req.params;
+
     if (!name || !location || !sports || !pricePerHour) {
       return res.status(400).json({ message: 'Name, location, sports, and price per hour are required' });
     }
@@ -194,10 +195,15 @@ exports.addturf = async (req, res) => {
     if (!owner) {
       return res.status(404).json({ message: 'Turf owner not found' });
     }
+
     let imageUrl;
     if (req.file) {
       imageUrl = await imageUpload(req.file.path);
+    } else if (turfImage) {
+      // If image is provided in request body (base64 or URL)
+      imageUrl = turfImage;
     }
+
     const newTurf = {
       name,
       location,
@@ -207,6 +213,7 @@ exports.addturf = async (req, res) => {
       image: imageUrl,
       ownerId: owner.turfId
     };
+
     if (!owner.turfs) {
       owner.turfs = [];
     }
@@ -232,13 +239,9 @@ exports.getOwnerTurfs = async (req, res) => {
     }
     res.json({
       message: 'Turfs retrieved successfully',
-      turfs: owner.turfs || []
+      turfs: owner || []
     });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
-
-exports.allturfofowner =async(req,res) =>{
-  
-}
