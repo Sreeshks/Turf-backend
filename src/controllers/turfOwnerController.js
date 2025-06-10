@@ -1,4 +1,5 @@
 const TurfOwner = require('../models/TurfOwner');
+const User = require('../models/User');
 const {imageUpload}=require('../utils/imageupload')
 const bcrypt = require('bcrypt');
 
@@ -143,3 +144,9 @@ exports.addturf = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+
+exports.deleteturf = async (req, res) => {
+  await  TurfOwner.findByIdAndDelete(req.params.turfId)
+  res.send('Delete Successfully')
+}
