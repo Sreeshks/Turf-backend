@@ -159,7 +159,7 @@ exports.booking = async (req, res) => {
     }
 
     // Find user and turf
-    const user = await User.findOne({ userid });
+    const user = await User.findById( userid );
     const turf = await TurfOwner.findOne({ turfId });
 
     if (!user) {
