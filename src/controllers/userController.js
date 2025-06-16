@@ -152,14 +152,14 @@ exports.resetPassword = async (req, res) => {
 
 exports.booking = async (req, res) => {
   try {
-    const { email, turfId, date, startTime, endTime, sport, amount } = req.body;
+    const { userid, turfId, date, startTime, endTime, sport, amount } = req.body;
 
-    if (!email || !turfId || !date || !startTime || !endTime || !sport || !amount) {
+    if (!userid || !turfId || !date || !startTime || !endTime || !sport || !amount) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     // Find user and turf
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ userid });
     const turf = await TurfOwner.findOne({ turfId });
 
     if (!user) {
