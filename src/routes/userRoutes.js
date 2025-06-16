@@ -10,6 +10,6 @@ router.put('/profile/:email', userController.updateProfile);
 router.post('/forgot-password', userController.forgotPassword);
 router.post('/reset-password', userController.resetPassword);
 router.post('/booking', bookingController.booking);
-router.get('/GetAllbooking', bookingController.booking);
+router.get('/GetAllbooking', bookingController.GetAllbooking);
 
 module.exports = router; 
