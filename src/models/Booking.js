@@ -2,12 +2,12 @@ const mongoose = require('mongoose');
 
 const bookingSchema = new mongoose.Schema({
   user: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.ObjectId,
     ref: 'User',
     required: true
   },
   turf: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: mongoose.ObjectId,
     ref: 'TurfOwner',
     required: true
   },
