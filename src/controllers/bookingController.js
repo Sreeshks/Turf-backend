@@ -13,7 +13,7 @@ exports.booking = async (req, res) => {
   
       // Find user and turf
       const user = await User.findById( userid );
-      const turfs = await TurfOwner.findById({ turf });
+      const turfs = await TurfOwner.findById( turf );
   
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
