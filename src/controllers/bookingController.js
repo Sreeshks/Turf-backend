@@ -5,28 +5,28 @@ const Booking = require('../models/Booking');
 
 exports.booking = async (req, res) => {
     try {
-      const { userid, turfId, date, startTime, endTime, sport, amount } = req.body;
+      const { userid, turf, date, startTime, endTime, sport, amount } = req.body;
   
-      if (!userid || !turfId || !date || !startTime || !endTime || !sport || !amount) {
+      if (!userid || !turf || !date || !startTime || !endTime || !sport || !amount) {
         return res.status(400).json({ message: 'All fields are required' });
       }
   
       // Find user and turf
       const user = await User.findById( userid );
-      const turf = await TurfOwner.findById({ turfId });
+      const turfs = await TurfOwner.findById({ turf });
   
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
   
-      if (!turf) {
+      if (!turfs) {
         return res.status(404).json({ message: 'Turf not found' });
       }
-      if (!turf.sports.includes(sport)) {
+      if (!turfs.sports.includes(sport)) {
         return res.status(400).json({ message: 'This sport is not available at this turf' });
       }
       const existingBooking = await Booking.findOne({
-        turf: turf._id,
+        turf: turfs._id,
         date: new Date(date),
         startTime,
         endTime,
@@ -40,7 +40,7 @@ exports.booking = async (req, res) => {
       
       const newBooking = new Booking({
         user: user._id,
-        turf: turf._id,
+        turf: turfs._id,
         date: new Date(date),
         startTime,
         endTime,
