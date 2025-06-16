@@ -66,3 +66,9 @@ exports.booking = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
+  
+exports.GetAllbooking = async (req, res) => {
+const booking = await Booking.find(req.query);
+res.json(booking)
+
+  };
